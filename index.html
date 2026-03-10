@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kingsway Hospital Multispeciality — Command Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">✚</div>
+    <div>
+      <div class="brand-name">Kingsway Hospital Multispeciality</div>
+      <div class="brand-status"><span class="pulse-dot"></span>SYSTEM ACTIVE</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" data-page="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="#" class="nav-item" data-page="units">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Units</span>
+    </a>
+    <a href="#" class="nav-item" data-page="inventory">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span>Inventory</span>
+    </a>
+    <a href="#" class="nav-item" data-page="alerts">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <span>Alerts</span><span class="nav-badge" id="alertBadge">3</span>
+    </a>
+    <a href="#" class="nav-item" data-page="staff">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      <span>Staff</span>
+    </a>
+    <a href="#" class="nav-item" data-page="predictions">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      <span>Predictions</span>
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="admin-avatar">RV</div>
+    <div class="admin-info">
+      <div class="admin-name">Dr. Ramesh Verma</div>
+      <div class="admin-role">System Administrator</div>
+    </div>
+    <svg class="settings-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 class="page-title" id="pageTitle">Command Dashboard</h1>
+      <div class="live-chip"><span class="live-dot"></span>LIVE UPDATES</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input type="text" id="globalSearch" placeholder="Search resources..." />
+      </div>
+      <div class="time-display" id="clock"></div>
+    </div>
+  </header>
+
+  <!-- ═══════════ PAGE: DASHBOARD ═══════════ -->
+  <div id="page-dashboard" class="page active">
+    <div class="emergency-banner" id="emergencyBanner">
+      <div class="emergency-icon">⚠</div>
+      <div><strong>URGENT ACTION REQUIRED</strong><span>Facility-Wide Emergency Protocol Active</span></div>
+      <button class="btn-dismiss" onclick="this.closest('.emergency-banner').style.display='none'">✕</button>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon-wrap critical-bg">🏥</div>
+        <div class="stat-label">ICU Capacity</div>
+        <div class="stat-value critical" id="statICUVal">94%</div>
+        <div class="stat-sub" id="statICUSub">42/45 Beds Active</div>
+        <div class="stat-bar"><div class="stat-bar-fill critical" id="statICUBar" style="width:94%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap warning-bg">💨</div>
+        <div class="stat-label">Ventilators</div>
+        <div class="stat-value warning" id="statVentVal">88%</div>
+        <div class="stat-sub" id="statVentSub">112/128 Units</div>
+        <div class="stat-bar"><div class="stat-bar-fill warning" id="statVentBar" style="width:88%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap good-bg">👨‍⚕️</div>
+        <div class="stat-label">Staff On-Duty</div>
+        <div class="stat-value good" id="statStaffVal">142</div>
+        <div class="stat-sub" id="statStandbySub">18 on Standby</div>
+        <div class="stat-bar"><div class="stat-bar-fill good" style="width:78%"></div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon-wrap blue-bg">📈</div>
+        <div class="stat-label">Peak Forecast (4h)</div>
+        <div class="stat-value blue" id="statPeakVal">98%</div>
+        <div class="stat-sub">Expected at 5:30 PM</div>
+        <div class="stat-bar"><div class="stat-bar-fill blue" id="statPeakBar" style="width:98%"></div></div>
+      </div>
+    </div>
+    <div class="content-grid">
+      <section class="panel panel-resources">
+        <div class="panel-header">
+          <h2>Department Resources</h2>
+          <span class="tag tag-blue">EMERGENCY WARD</span>
+        </div>
+        <div class="resource-tabs">
+          <button class="rtab active" data-rtab="resources">Resources</button>
+          <button class="rtab" data-rtab="staff-tab">Staff</button>
+        </div>
+        <div id="rtab-resources" class="rtab-content active"><div class="resource-list" id="resourceList"></div></div>
+        <div id="rtab-staff-tab" class="rtab-content"><div class="resource-list" id="staffTabList"></div></div>
+      </section>
+      <section class="panel panel-emergency">
+        <div class="panel-header"><h2>Critical Resource Status</h2><div class="live-chip sm"><span class="live-dot"></span>LIVE</div></div>
+        <div class="resource-meter">
+          <div class="meter-header"><span>Internal ICU Capacity</span><span class="tag tag-critical">CRITICAL</span></div>
+          <div class="meter-percent" id="icuPct">94% Occupied</div>
+          <div class="meter-bar"><div class="meter-fill critical" id="icuBar" style="width:94%"></div></div>
+          <div class="meter-footer"><span id="icuActive">42/45 Beds Active</span><span class="text-critical" id="icuRemain">3 Beds Remaining</span></div>
+        </div>
+        <div class="resource-meter">
+          <div class="meter-header"><span>On-site Ventilators</span><span class="tag tag-warning">LOW STOCK</span></div>
+          <div class="meter-percent" id="ventPct">88% In Use</div>
+          <div class="meter-bar"><div class="meter-fill warning" id="ventBar" style="width:88%"></div></div>
+          <div class="meter-footer"><span id="ventActive">112/128 Units Active</span><span class="text-warning" id="ventRemain">16 Units Available</span></div>
+        </div>
+        <div class="lockdown-section">
+          <div class="panel-header" style="margin-bottom:10px"><h2>Facility Lockdown Status</h2></div>
+          <div class="facility-map">
+            <div class="map-grid">
+              <div class="map-zone safe">Z1</div><div class="map-zone safe">Z2</div>
+              <div class="map-zone caution">Z3</div>
+              <div class="map-zone restricted active-zone" id="activeZone"><span>📍</span> Zone 4: Restricted</div>
+              <div class="map-zone safe">Z5</div><div class="map-zone safe">Z6</div>
+            </div>
+          </div>
+        </div>
+        <div class="staffing-row">
+          <p class="section-sub-title">Emergency Staffing</p>
+          <div class="staffing-cards">
+            <div class="staffing-card"><div class="staffing-num" id="staffDuty">142</div><div class="staffing-label">ON-DUTY</div></div>
+            <div class="staffing-card standby"><div class="staffing-num" id="staffStandby">18</div><div class="staffing-label">STANDBY</div></div>
+          </div>
+        </div>
+      </section>
+      <section class="panel panel-predictions">
+        <div class="panel-header"><h2>Resource Usage &amp; Prediction</h2><span class="mono-label">PREDICTIVE ANALYTICS</span></div>
+        <div class="prediction-alert">
+          <div class="pred-icon">⚠</div>
+          <div><div class="pred-title">CRITICAL PREDICTION</div>
+          <div class="pred-body">ICU beds reach full capacity in <strong id="predMinutes">45</strong> min.</div></div>
+        </div>
+        <div class="pred-confidence">Confidence: <strong id="predConf">94%</strong><button class="btn-divert">Manage Diversion</button></div>
+        <div class="chart-section">
+          <div class="chart-peak-row">
+            <div><div class="chart-label-sm">PEAK FORECAST</div><div class="chart-peak-val" id="chartPeak">98%</div></div>
+            <div class="chart-trend-badge">↑ +12% vs Avg<br><small>Expected at 5:30 PM</small></div>
+          </div>
+          <div class="chart-wrap"><canvas id="occupancyChart" height="100"></canvas></div>
+          <div class="chart-axis"><span>NOW</span><span>3 PM</span><span>4 PM</span><span>5 PM</span><span>6 PM</span></div>
+        </div>
+        <div class="threshold-section"><h3>Critical Threshold Alerts</h3><div id="thresholdAlerts"></div></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ═══════════ PAGE: UNITS ═══════════ -->
+  <div id="page-units" class="page">
+    <div class="page-toolbar">
+      <div class="filter-group" id="unitsFilterGroup">
+        <button class="filter-btn active" data-filter="all">All Units</button>
+        <button class="filter-btn" data-filter="icu">ICU</button>
+        <button class="filter-btn" data-filter="standard">Standard</button>
+        <button class="filter-btn" data-filter="radiology">Radiology</button>
+        <button class="filter-btn" data-filter="emergency">Emergency</button>
+      </div>
+    </div>
+    <div class="units-grid" id="unitsGrid"></div>
+  </div>
+
+  <!-- ═══════════ PAGE: INVENTORY ═══════════ -->
+  <div id="page-inventory" class="page">
+    <div class="page-toolbar">
+      <div class="filter-group" id="invFilterGroup">
+        <button class="filter-btn active" data-inv-filter="all">All Items</button>
+        <button class="filter-btn" data-inv-filter="not_available">Not Available</button>
+        <button class="filter-btn" data-inv-filter="low">Low Stock</button>
+        <button class="filter-btn" data-inv-filter="ok">Adequate</button>
+      </div>
+    </div>
+    <div class="inv-summary-row">
+      <div class="inv-stat"><span class="inv-stat-num critical" id="invCritCount">4</span><span class="inv-stat-label">Not Available</span></div>
+      <div class="inv-stat"><span class="inv-stat-num warning" id="invLowCount">7</span><span class="inv-stat-label">Low Stock</span></div>
+      <div class="inv-stat"><span class="inv-stat-num good" id="invOkCount">23</span><span class="inv-stat-label">Adequate</span></div>
+      <div class="inv-stat"><span class="inv-stat-num blue" id="invTotalCount">34</span><span class="inv-stat-label">Total Items</span></div>
+    </div>
+    <div class="inv-table-wrap">
+      <table class="inv-table">
+        <thead><tr><th>Item</th><th>In Stock</th><th>Status</th></tr></thead>
+        <tbody id="inventoryBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════ PAGE: ALERTS ═══════════ -->
+  <div id="page-alerts" class="page">
+    <div class="page-toolbar">
+      <div class="filter-group" id="alertFilterGroup">
+        <button class="filter-btn active" data-alert-filter="all">All</button>
+        <button class="filter-btn" data-alert-filter="critical">Critical</button>
+        <button class="filter-btn" data-alert-filter="warning">Warning</button>
+        <button class="filter-btn" data-alert-filter="info">Info</button>
+      </div>
+      <button class="btn-outline" id="clearAlertsBtn">Clear All Read</button>
+    </div>
+    <div class="alerts-list" id="alertsList"></div>
+  </div>
+
+  <!-- ═══════════ PAGE: STAFF ═══════════ -->
+  <div id="page-staff" class="page">
+    <div class="page-toolbar">
+      <div class="filter-group" id="staffFilterGroup">
+        <button class="filter-btn active" data-staff-filter="all">All Staff</button>
+        <button class="filter-btn" data-staff-filter="on-duty">On Duty</button>
+        <button class="filter-btn" data-staff-filter="standby">Standby</button>
+        <button class="filter-btn" data-staff-filter="off">Off Duty</button>
+      </div>
+    </div>
+    <div class="staff-stats-row">
+      <div class="staff-stat-card"><div class="ssn good">142</div><div class="ssl">On Duty</div></div>
+      <div class="staff-stat-card"><div class="ssn warning">18</div><div class="ssl">Standby</div></div>
+      <div class="staff-stat-card"><div class="ssn neutral">34</div><div class="ssl">Off Duty</div></div>
+      <div class="staff-stat-card"><div class="ssn blue">194</div><div class="ssl">Total Staff</div></div>
+    </div>
+    <div class="staff-grid" id="staffGrid"></div>
+  </div>
+
+  <!-- ═══════════ PAGE: PREDICTIONS ═══════════ -->
+  <div id="page-predictions" class="page">
+    <div class="predictions-grid">
+      <div class="panel pred-main-panel">
+        <div class="panel-header"><h2>Occupancy Forecast — Next 24h</h2></div>
+        <div class="pred-hero">
+          <div class="pred-hero-left">
+            <div class="pred-hero-label">PEAK OCCUPANCY PREDICTED</div>
+            <div class="pred-hero-val critical" id="predHeroPct">98%</div>
+            <div class="pred-hero-time">Expected today at 5:30 PM</div>
+            <div class="pred-conf-bar">
+              <span>Confidence</span>
+              <div class="conf-track"><div class="conf-fill" id="confFill" style="width:94%"></div></div>
+              <strong id="predHeroConf">94%</strong>
+            </div>
+          </div>
+          <div class="pred-hero-right"><canvas id="predBigChart"></canvas></div>
+        </div>
+        <div class="pred-chart-axis">
+          <span>NOW</span><span>2h</span><span>4h</span><span>6h</span><span>8h</span><span>10h</span><span>12h</span><span>14h</span><span>16h</span><span>18h</span><span>20h</span><span>24h</span>
+        </div>
+      </div>
+      <div class="panel pred-dept-panel">
+        <div class="panel-header"><h2>Department Forecasts</h2></div>
+        <div id="deptForecasts"></div>
+      </div>
+      <div class="panel pred-alerts-panel">
+        <div class="panel-header"><h2>Threshold Alerts</h2><span class="tag tag-critical">4 ACTIVE</span></div>
+        <div id="predAlertsFull"></div>
+      </div>
+      <div class="panel pred-actions-panel">
+        <div class="panel-header"><h2>Recommended Actions</h2></div>
+        <div id="predActions"></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Modal overlay -->
+<div id="modalOverlay" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box" id="modalBox"></div>
+</div>
+
+<!-- Toast container -->
+<div id="toastWrap"></div>
+
+<!-- DB Badge -->
+<div id="dbBadge">
+  <span id="dbDot" style="width:7px;height:7px;border-radius:50%;background:var(--warning);display:inline-block"></span>
+  <span id="dbText" style="color:var(--text-secondary)">Connecting…</span>
+</div>
+
+<div class="conn-indicator" id="connIndicator">
+  <span class="conn-dot disconnected" id="connDot"></span>
+  <span id="connText">Connecting…</span>
+</div>
+
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>
