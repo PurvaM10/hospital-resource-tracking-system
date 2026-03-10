@@ -1,4 +1,4 @@
-# St. Jude Medical — Hospital Command Dashboard
+# Kingsway Hospital — Hospital Command Dashboard
 
 A real-time hospital resource management dashboard built with:
 - **Flask** — Python web framework
